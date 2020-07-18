@@ -7,11 +7,11 @@ public class Aluno implements Serializable{
 	private String nome;
 	private double[][] notas = new double[4][6];
 	
-	private double[][] notaFinal = new double[4][2];
+	private double[][] notaFinalBimestre = new double[4][2];
 	private short[] faltas = new short[4];
 	private short totalFaltas; 
 	private double totalNota;
-	private boolean aprovado = false;
+	private boolean aprovado;
 	
 	public Aluno(int numero, String nome) {
 		this.numero = numero;
@@ -54,17 +54,17 @@ public class Aluno implements Serializable{
 		return aprovado;
 	}
 
-	public double getNotaFinal(byte bimestre) {
-		return notaFinal[bimestre -1][1];
+	public double getNotaFinalBimestre(byte bimestre) {
+		return notaFinalBimestre[bimestre -1][1];
 	}
 	
-	public void calcularNotaFinal() {
+	public void calcularNotaFinalBimestre() {
 		
 		for (int i = 0; i < notas.length; i++) {
 			for (int j = 0; j < notas[i].length; j++) {
 				if (j % 2 == 0) {
-					notaFinal[i][0] += notas[i][j];
-					notaFinal[i][1] += (notas[i][j] > notas[i][j + 1] ? notas[i][j]: notas[i][j + 1]);
+					notaFinalBimestre[i][0] += notas[i][j];
+					notaFinalBimestre[i][1] += (notas[i][j] > notas[i][j + 1] ? notas[i][j] : notas[i][j + 1]);
 				}				
 			}
 		}
@@ -72,8 +72,8 @@ public class Aluno implements Serializable{
 	
 	public double getTotalNota() {
 		
-		for (byte i = 1; i <= notaFinal.length; i++) {
-			this.totalNota += getNotaFinal(i);
+		for (byte i = 1; i <= notaFinalBimestre.length; i++) {
+			this.totalNota += getNotaFinalBimestre(i);
 		}
 		
 		return this.totalNota;
@@ -112,28 +112,33 @@ public class Aluno implements Serializable{
 		System.out.println();
 		System.out.print("             ");
 		
-		for (int i = 0; i < notaFinal[0].length; i++) { // imprime o título dos somatórios de nota final
+		for (int i = 0; i < notaFinalBimestre[0].length; i++) { // imprime o título dos somatórios de nota final
 			if (i % 2 == 0)	System.out.printf("Soma a.r ", i + 1);
 			else System.out.printf(" Soma d.r ", i + 1);
 		}
 		
 		System.out.println();
 		
-		calcularNotaFinal();
+		calcularNotaFinalBimestre(); // calcula os somatórios antes e depois da rec
 		
-		for (int i = 0; i < notaFinal.length; i++) { // imprime as notas finais
+		for (int i = 0; i < notaFinalBimestre.length; i++) { // imprime as notas finais
 			System.out.print("Bimestre " + (i + 1) + " ");
-			for (int j = 0; j < notaFinal[i].length; j++) {
-				System.out.printf("%10.1f", notaFinal[i][j]);
+			for (int j = 0; j < notaFinalBimestre[i].length; j++) {
+				System.out.printf("%10.1f", notaFinalBimestre[i][j]);
 			}
 			System.out.println();
 		}
 		
+		System.out.printf("Total notas%20.1f (%s)", getTotalNota(), 
+				(getTotalNota() <= 20 ? "APROVADO" : "REPROVADO")); // imprime o total das notas finais dos bim
+		
 		System.out.println();		
 		System.out.println("             Faltas");
 		
-		for (int i = 0; i < faltas.length; i++) {
+		for (int i = 0; i < faltas.length; i++) { // imprime as faltas por bimestre
 			System.out.printf("Bimestre %d %8d%n", i + 1, faltas[i]);
 		}
+		
+		System.out.printf("Total faltas%7d", getTotalFaltas()); // imprime o total de faltas
 	}
 }
