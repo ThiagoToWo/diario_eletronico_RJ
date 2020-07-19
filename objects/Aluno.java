@@ -1,17 +1,18 @@
 package objects;
 
+import java.io.PrintStream;
 import java.io.Serializable;
 
 public class Aluno implements Serializable{
 	private int numero;
 	private String nome;
-	private double[][] notas = new double[4][6];
-	
+	private double[][] notas = new double[4][6];	
 	private double[][] notaFinalBimestre = new double[4][2];
 	private short[] faltas = new short[4];
 	private short totalFaltas; 
 	private double totalNota;
 	private boolean aprovado;
+	private PrintStream p;
 	
 	public Aluno(int numero, String nome) {
 		this.numero = numero;
@@ -89,56 +90,77 @@ public class Aluno implements Serializable{
 	}
 	
 	
-	public void display() {
-		System.out.println(numero + ". " + nome); // imprime número e nome do aluno
-		System.out.println();
-		System.out.print("            ");
+	public void display(PrintStream output) { // display no console
+		p = new PrintStream(output);
+		p.println(numero + ". " + nome); // imprime número e nome do aluno
+		p.println();
+		p.print("            ");
 
 		for (int i = 0; i < notas[0].length; i++) { // imprime o título dos instrumentos e recuperações
-			if (i % 2 == 0)	System.out.printf("Inst. %d ", (i + 2) / 2);
-			else System.out.printf(" Rec. %d ", (i + 1) / 2);
+			if (i % 2 == 0)	p.printf("Inst. %d ", (i + 2) / 2);
+			else p.printf(" Rec. %d ", (i + 1) / 2);
 		}
 		
-		System.out.println();
+		p.println();
 		
 		for (int i = 0; i < notas.length; i++) { // imprime a matriz de notas
-			System.out.print("Bimestre " + (i + 1) + " ");
+			p.print("Bimestre " + (i + 1) + " ");
 			for (int j = 0; j < notas[i].length; j++) {
-				System.out.printf("%8.1f", notas[i][j]);
+				p.printf("%8.1f", notas[i][j]);
 			}
-			System.out.println();
+			p.println();
 		}
 		
-		System.out.println();
-		System.out.print("             ");
+		p.println();
+		p.print("             ");
 		
 		for (int i = 0; i < notaFinalBimestre[0].length; i++) { // imprime o título dos somatórios de nota final
-			if (i % 2 == 0)	System.out.printf("Soma a.r ", i + 1);
-			else System.out.printf(" Soma d.r ", i + 1);
+			if (i % 2 == 0)	p.printf("Soma a.r ", i + 1);
+			else p.printf(" Soma d.r ", i + 1);
 		}
 		
-		System.out.println();
+		p.println();
 		
 		calcularNotaFinalBimestre(); // calcula os somatórios antes e depois da rec
 		
 		for (int i = 0; i < notaFinalBimestre.length; i++) { // imprime as notas finais
-			System.out.print("Bimestre " + (i + 1) + " ");
+			p.print("Bimestre " + (i + 1) + " ");
 			for (int j = 0; j < notaFinalBimestre[i].length; j++) {
-				System.out.printf("%10.1f", notaFinalBimestre[i][j]);
+				p.printf("%10.1f", notaFinalBimestre[i][j]);
 			}
-			System.out.println();
+			p.println();
 		}
 		
-		System.out.printf("Total notas%20.1f (%s)", getTotalNota(), 
+		p.printf("Total notas%20.1f (%s)%n", getTotalNota(), 
 				(getTotalNota() <= 20 ? "APROVADO" : "REPROVADO")); // imprime o total das notas finais dos bim
 		
-		System.out.println();		
-		System.out.println("             Faltas");
+		p.println();		
+		p.println("             Faltas");
 		
 		for (int i = 0; i < faltas.length; i++) { // imprime as faltas por bimestre
-			System.out.printf("Bimestre %d %8d%n", i + 1, faltas[i]);
+			p.printf("Bimestre %d %8d%n", i + 1, faltas[i]);
 		}
 		
-		System.out.printf("Total faltas%7d", getTotalFaltas()); // imprime o total de faltas
+		p.printf("Total faltas%7d", getTotalFaltas()); // imprime o total de faltas
+		
+		p.println("\n");
+	}
+
+	public void displayBimestre(int bimestre, PrintStream output) { // display bimestre no console
+		p = new PrintStream(output);
+				
+		p.print(numero + ". " + nome); // imprime nome e número
+		
+		for (int j = 0; j < notas[bimestre].length; j++) { // imprime as notas do bimestre
+			p.printf("%8.1f", notas[bimestre][j]);
+		}
+		
+		calcularNotaFinalBimestre();
+		
+		for (int j = 0; j < notaFinalBimestre[bimestre].length; j++) { // imprime os somatórios do bimestre
+			p.printf("%8.1f", notaFinalBimestre[bimestre][j]);
+		}
+		
+		p.println("      " + faltas[bimestre]);
 	}
 }

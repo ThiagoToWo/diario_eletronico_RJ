@@ -1,11 +1,14 @@
 package objects;
 
+import java.io.PrintStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Turma {
+public class Turma implements Serializable{
 	
 	private String nome;
 	private ArrayList<Aluno> listaDeAlunos = new ArrayList<Aluno>();
+	private PrintStream p;
 	
 	public Turma(String nome) {
 		this.nome = nome;
@@ -19,7 +22,14 @@ public class Turma {
 		return listaDeAlunos.get(numero);
 	}
 
-	public void addListaDeAlunos(Aluno aluno) {
+	public void addListaDeAlunos(Aluno aluno) {		
 		this.listaDeAlunos.add(aluno.getNumero(), aluno);
+	}
+	
+	public void display() {
+		p = new PrintStream(System.out);
+		for (Aluno aluno : listaDeAlunos) {
+			p.printf("%d %s", aluno.getNumero(), aluno.getNome());
+		}
 	}
 }
