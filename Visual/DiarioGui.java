@@ -150,6 +150,21 @@ public class DiarioGui extends JFrame {
 		setVisible(true);
 	}
 	
+	/*private void preencherAluno(Aluno aluno, byte bimestre, JPanel painel) {
+		if (turma != null) { // se existe turma
+			int num = Integer.parseInt(numero.getText());
+			if (turma.getListaDeAlunos(num) == null) {
+				aluno = new Aluno(num, nome.getText());
+				aluno.setNotas(bimestre, , nota);
+				turma.addListaDeAlunos(aluno);
+			}
+			
+		} else {
+			JOptionPane.showMessageDialog(getParent(), "Crie ou carregue uma turma.",
+					null, JOptionPane.WARNING_MESSAGE);
+		}
+	}*/
+	
 	public class CriarListener implements ActionListener {
 
 		@Override
@@ -186,13 +201,7 @@ public class DiarioGui extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			if (turma != null) {
-				Aluno aluno = new Aluno(Integer.parseInt(numero.getText()), nome.getText());
-				turma.addListaDeAlunos(aluno);
-			} else {
-				JOptionPane.showMessageDialog(getParent(), "Crie ou carregue uma turma.",
-						null, JOptionPane.WARNING_MESSAGE);
-			}
+			
 			
 		}
 

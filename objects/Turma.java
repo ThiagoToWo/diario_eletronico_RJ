@@ -2,12 +2,12 @@ package objects;
 
 import java.io.PrintStream;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.TreeMap;
 
 public class Turma implements Serializable{
 	
 	private String nome;
-	private ArrayList<Aluno> listaDeAlunos = new ArrayList<Aluno>();
+	private TreeMap<Integer, Aluno> listaDeAlunos = new TreeMap<Integer, Aluno>();
 	private PrintStream p;
 	
 	public Turma(String nome) {
@@ -22,8 +22,8 @@ public class Turma implements Serializable{
 		return listaDeAlunos.get(numero);
 	}
 
-	public void addListaDeAlunos(Aluno aluno) {		
-		this.listaDeAlunos.add(aluno.getNumero() - 1, aluno);
+	public void addListaDeAlunos(Aluno aluno) {
+		listaDeAlunos.put(aluno.getNumero(), aluno);
 	}
 	
 	public void display() {
