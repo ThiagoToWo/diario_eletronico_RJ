@@ -23,7 +23,7 @@ public class Turma implements Serializable{
 	}
 
 	public void addListaDeAlunos(Aluno aluno) {		
-		this.listaDeAlunos.add(aluno.getNumero(), aluno);
+		this.listaDeAlunos.add(aluno.getNumero() - 1, aluno);
 	}
 	
 	public void display() {

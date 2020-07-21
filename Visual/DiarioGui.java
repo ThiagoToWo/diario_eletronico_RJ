@@ -15,10 +15,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
+import objects.Aluno;
+import objects.FileManager;
 import objects.Turma;
 
-public class DiarioGui extends JFrame {
-	private Turma turma;
+public class DiarioGui extends JFrame {	
+
+	private Turma turma;	
 	private String[] caput = {"Número", "Nome", "Intrumento 1", "Recuperação 1", "Intrumento 2", "Recuperação 2",
 			 "Intrumento 3", "Recuperação 3", "Somatória antes da rec.", "Somatório depois da rec.", "Faltas"};
 	private JPanel panelBimestre1;
@@ -26,7 +29,16 @@ public class DiarioGui extends JFrame {
 	private JPanel panelBimestre3;
 	private JPanel panelBimestre4;
 	private JPanel panelFinal;
-	
+	private FileManager fmn = new FileManager();
+	JTextField numero;
+	JTextField nome;
+	JTextField nota1Inst;
+	JTextField rec1Inst;
+	JTextField nota2Inst;
+	JTextField rec2Inst;
+	JTextField nota3Inst;
+	JTextField rec3Inst;
+	JTextField faltas;
 	private String autor = "Autor: Thiago de Oliveira Alves\ntowo497@gmail.com";
 	private String versao = "Versão: 1.0 \n 19-07-2020\n\n";
 	
@@ -35,13 +47,24 @@ public class DiarioGui extends JFrame {
 		
 		// cria e configura a barra de menu
 		JMenuBar barraDeMenu = new JMenuBar();
+		JMenu menuArquivo = new JMenu("Arquivo");
+		JMenuItem novaTurma = new JMenuItem("Criar nova turma");
+		novaTurma.addActionListener(new CriarListener());
+		JMenuItem carregarTurma = new JMenuItem("Carregar");
+		carregarTurma.addActionListener(new CarregarListener());
+		JMenuItem salvarTurma = new JMenuItem("Salvar");
+		salvarTurma.addActionListener(new SalvarListener());
 		JMenu menuSobre = new JMenu("Informações");
 		JMenuItem autoria = new JMenuItem("Autor");
 		autoria.addActionListener(new AutorListener());
 		JMenuItem versao = new JMenuItem("Sobre o aplicativo");
 		versao.addActionListener(new VersaoListener());
+		menuArquivo.add(novaTurma);
+		menuArquivo.add(carregarTurma);
+		menuArquivo.add(salvarTurma);
 		menuSobre.add(autoria);
 		menuSobre.add(versao);
+		barraDeMenu.add(menuArquivo);
 		barraDeMenu.add(menuSobre);
 		setJMenuBar(barraDeMenu);
 		
@@ -49,15 +72,26 @@ public class DiarioGui extends JFrame {
 		JPanel painelNorte = new JPanel();
 		
 		// cria as entradas de texto que capturarão as informações dos alunos
-		JTextField numero = new JTextField(2);
-		JTextField nome = new JTextField(20);
-		JTextField nota1Inst = new JTextField(3);
-		JTextField rec1Inst = new JTextField(3);
-		JTextField nota2Inst = new JTextField(3);
-		JTextField rec2Inst = new JTextField(3);
-		JTextField nota3Inst = new JTextField(3);
-		JTextField rec3Inst = new JTextField(3);
-		JTextField faltas = new JTextField(3);
+		numero = new JTextField(2);
+		nome = new JTextField(20);
+		nota1Inst = new JTextField(3);
+		rec1Inst = new JTextField(3);
+		nota2Inst = new JTextField(3);
+		rec2Inst = new JTextField(3);
+		nota3Inst = new JTextField(3);
+		rec3Inst = new JTextField(3);
+		faltas = new JTextField(3);
+		
+		IncluirListener il = new IncluirListener();
+		numero.addActionListener(il);
+		nome.addActionListener(il);
+		nota1Inst.addActionListener(il);
+		rec1Inst.addActionListener(il);
+		nota2Inst.addActionListener(il);
+		rec2Inst.addActionListener(il);
+		nota3Inst.addActionListener(il);
+		rec3Inst.addActionListener(il);
+		faltas.addActionListener(il);
 		
 		// cria os rótulos das entradas de texto
 		JLabel rotuloNumero = new JLabel("Número ");	
@@ -114,6 +148,54 @@ public class DiarioGui extends JFrame {
 		setSize(1000, 800);
 		setLocation(400, 100);
 		setVisible(true);
+	}
+	
+	public class CriarListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String nomeDaTurma = JOptionPane.showInputDialog(getParent(), "Nome da turma", "Nova turma",
+					JOptionPane.QUESTION_MESSAGE);
+			turma = new Turma(nomeDaTurma);
+			setTitle(nomeDaTurma);
+		}
+
+	}
+
+	public class CarregarListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			turma = (Turma) fmn.desserializarComFileChooser();
+			setTitle(turma.getNome());
+			
+		}
+
+	}
+
+	public class SalvarListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			fmn.serializarComFileChooser(turma);
+		}
+
+	}
+	
+	public class IncluirListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if (turma != null) {
+				Aluno aluno = new Aluno(Integer.parseInt(numero.getText()), nome.getText());
+				turma.addListaDeAlunos(aluno);
+			} else {
+				JOptionPane.showMessageDialog(getParent(), "Crie ou carregue uma turma.",
+						null, JOptionPane.WARNING_MESSAGE);
+			}
+			
+		}
+
 	}
 	
 	private class AutorListener implements ActionListener {
