@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import objects.Aluno;
@@ -24,6 +25,7 @@ public class DiarioGui extends JFrame {
 	private Turma turma;	
 	private String[] caput = {"Número", "Nome", "Intrumento 1", "Recuperação 1", "Intrumento 2", "Recuperação 2",
 			 "Intrumento 3", "Recuperação 3", "Somatória antes da rec.", "Somatório depois da rec.", "Faltas"};
+	private JTabbedPane tabBimestres;
 	private JPanel panelBimestre1;
 	private JPanel panelBimestre2;
 	private JPanel panelBimestre3;
@@ -127,19 +129,19 @@ public class DiarioGui extends JFrame {
 		getContentPane().add(BorderLayout.NORTH, painelNorte);
 		
 		// cria os painéis dos bimestres
-		JPanel panelBimestre1 = new JPanel();
-		JPanel panelBimestre2 = new JPanel();
-		JPanel panelBimestre3 = new JPanel();
-		JPanel panelBimestre4 = new JPanel();
-		JPanel panelFinal = new JPanel();
+		panelBimestre1 = new JPanel();
+		panelBimestre2 = new JPanel();
+		panelBimestre3 = new JPanel();
+		panelBimestre4 = new JPanel();
+		panelFinal = new JPanel();
 		
 		// cria as tabs e adiciona os painéis dos bimestres
-		JTabbedPane tabBimestres = new JTabbedPane();
-		tabBimestres.addTab("Bimestre 1", new JScrollPane(panelBimestre1));
-		tabBimestres.addTab("Bimestre 2", new JScrollPane(panelBimestre2));
-		tabBimestres.addTab("Bimestre 3", new JScrollPane(panelBimestre3));
-		tabBimestres.addTab("Bimestre 4", new JScrollPane(panelBimestre4));
-		tabBimestres.addTab("Final", new JScrollPane(panelFinal));
+		tabBimestres = new JTabbedPane();
+		tabBimestres.addTab("Bimestre 1", panelBimestre1);
+		tabBimestres.addTab("Bimestre 2", panelBimestre2);
+		tabBimestres.addTab("Bimestre 3", panelBimestre3);
+		tabBimestres.addTab("Bimestre 4", panelBimestre4);
+		tabBimestres.addTab("Final", panelFinal);
 		
 		// adiciona as tabs no frame
 		getContentPane().add(BorderLayout.CENTER, tabBimestres);
@@ -150,20 +152,75 @@ public class DiarioGui extends JFrame {
 		setVisible(true);
 	}
 	
-	/*private void preencherAluno(Aluno aluno, byte bimestre, JPanel painel) {
+	private void editarAluno() {
 		if (turma != null) { // se existe turma
-			int num = Integer.parseInt(numero.getText());
+			int num = getNumero();
+			double[] not = getNotas();
+			short fal = getFaltas();
 			if (turma.getListaDeAlunos(num) == null) {
-				aluno = new Aluno(num, nome.getText());
-				aluno.setNotas(bimestre, , nota);
+				Aluno aluno = new Aluno(num, nome.getText());				
+				aluno.setNotas(tabBimestres.getSelectedIndex() + 1, not);
+				aluno.setFaltas(tabBimestres.getSelectedIndex() + 1, fal);
 				turma.addListaDeAlunos(aluno);
-			}
-			
+			} else {
+				Aluno aluno = turma.getListaDeAlunos(num);
+				if (!nome.getText().isEmpty()) aluno.setNome(nome.getText());
+				aluno.setNotas(tabBimestres.getSelectedIndex() + 1, not);
+				aluno.setFaltas(tabBimestres.getSelectedIndex() + 1, fal);
+			}			
 		} else {
 			JOptionPane.showMessageDialog(getParent(), "Crie ou carregue uma turma.",
 					null, JOptionPane.WARNING_MESSAGE);
 		}
-	}*/
+	}
+	
+	private void preencherTabela() {
+		JTable tabela = new JTable(turma.getInfoDosAlunosPorBimestre(1), caput);
+		panelBimestre1.removeAll();
+		JScrollPane rolagem = new JScrollPane(tabela);
+		panelBimestre1.add(rolagem);
+	}	
+	
+	private int getNumero() {
+		int num = 0;
+		try {
+			num = new Integer(numero.getText());
+		
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(getParent(), "Insira um número válido para o aluno",
+					"Erro", JOptionPane.ERROR_MESSAGE);
+		}		
+		return num;
+	}
+	
+	private double[] getNotas() {
+		double[] notas = new double[6];
+		try {
+			if (!nota1Inst.getText().isEmpty()) notas[0] = new Double(nota1Inst.getText());
+			if (!rec1Inst.getText().isEmpty()) notas[1] = new Double(rec1Inst.getText());
+			if (!nota2Inst.getText().isEmpty()) notas[2] = new Double(nota2Inst.getText());
+			if (!rec2Inst.getText().isEmpty()) notas[3] = new Double(rec2Inst.getText());
+			if (!nota3Inst.getText().isEmpty()) notas[4] = new Double(nota3Inst.getText());
+			if (!rec3Inst.getText().isEmpty()) notas[5] = new Double(rec3Inst.getText());
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(getParent(), "Insira qualquer valor de nota separando o décimos"
+					+ "com \".\" (ponto)",
+					"Erro", JOptionPane.ERROR_MESSAGE);
+		}
+		return notas;
+	}
+	
+	private short getFaltas() {
+		short fal = 0;
+		try {
+			if (!faltas.getText().isEmpty())
+				fal = new Short(faltas.getText());		
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(getParent(), "Insira um número válido para a falta",
+					"Erro", JOptionPane.ERROR_MESSAGE);
+		}		
+		return fal;
+	}
 	
 	public class CriarListener implements ActionListener {
 
@@ -200,9 +257,9 @@ public class DiarioGui extends JFrame {
 	public class IncluirListener implements ActionListener {
 
 		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			
-			
+		public void actionPerformed(ActionEvent arg0) {			
+			editarAluno();
+			preencherTabela();
 		}
 
 	}
@@ -212,7 +269,6 @@ public class DiarioGui extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {			
 			JOptionPane.showMessageDialog(null, autor, "Sobre mim", JOptionPane.INFORMATION_MESSAGE);
-
 		}
 
 	}
@@ -225,6 +281,6 @@ public class DiarioGui extends JFrame {
 
 		}
 
-	}	
+	}
 
 }

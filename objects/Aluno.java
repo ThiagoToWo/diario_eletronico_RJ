@@ -8,7 +8,7 @@ public class Aluno implements Serializable{
 	private String nome;
 	private double[][] notas = new double[4][6];	
 	private double[][] notaFinalBimestre = new double[4][2];
-	private short[] faltas = new short[4];
+	private int[] faltas = new int[4];
 	private short totalFaltas; 
 	private double totalNota;
 	private boolean aprovado;
@@ -23,7 +23,8 @@ public class Aluno implements Serializable{
 		return numero;
 	}
 
-	public void setNumero(byte numero) {
+	public void setNumero(int numero) {
+		if (numero != 0)
 		this.numero = numero;
 	}
 
@@ -35,19 +36,25 @@ public class Aluno implements Serializable{
 		this.nome = nome;
 	}
 
-	public double getNotas(byte bimestre, byte avaliacao) {
+	public double getNotasDaAvaliacao(int bimestre, int avaliacao) {
 		return notas[bimestre - 1][avaliacao - 1];
 	}
-
-	public void setNotas(byte bimestre, byte avaliacao, float nota) {
+	
+	public void setNotas(int bimestre, int avaliacao, double nota) {
 		this.notas[bimestre - 1][avaliacao - 1] = nota;
 	}
+	
+	public void setNotas(int bimestre, double[] nota) {
+		for (int i = 0; i < nota.length; i++) {
+			this.notas[bimestre - 1][i] = nota[i];
+		}
+	}
 
-	public short getFaltas(byte bimestre) {
+	public int getFaltas(int bimestre) {
 		return faltas[bimestre - 1];
 	}
 
-	public void setFaltas(byte bimestre, short faltas) {
+	public void setFaltas(int bimestre, int faltas) {
 		this.faltas[bimestre - 1] = faltas;
 	}
 
@@ -55,7 +62,7 @@ public class Aluno implements Serializable{
 		return aprovado;
 	}
 
-	public double getNotaFinalBimestre(byte bimestre) {
+	public double getNotaFinalBimestre(int bimestre) {
 		return notaFinalBimestre[bimestre -1][1];
 	}
 	
@@ -73,16 +80,16 @@ public class Aluno implements Serializable{
 	
 	public double getTotalNota() {
 		
-		for (byte i = 1; i <= notaFinalBimestre.length; i++) {
+		for (int i = 1; i <= notaFinalBimestre.length; i++) {
 			this.totalNota += getNotaFinalBimestre(i);
 		}
 		
 		return this.totalNota;
 	}
 
-	public short getTotalFaltas() {
+	public int getTotalFaltas() {
 		
-		for (byte i = 1; i <= faltas.length; i++) {
+		for (int i = 1; i <= faltas.length; i++) {
 			this.totalFaltas += getFaltas(i);
 		}
 		

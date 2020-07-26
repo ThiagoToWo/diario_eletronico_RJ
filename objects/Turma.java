@@ -2,6 +2,8 @@ package objects;
 
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.Map.Entry;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class Turma implements Serializable{
@@ -26,10 +28,37 @@ public class Turma implements Serializable{
 		listaDeAlunos.put(aluno.getNumero(), aluno);
 	}
 	
+	public Object[][] getInfoDosAlunosPorBimestre(int bimestre) {		
+		Object[][] infoBi = new Object[listaDeAlunos.size()][11];
+		
+		for (int i = 0; i < infoBi.length; i++) {
+			infoBi[i][0] = new Integer(getListaDeAlunos(i + 1).getNumero());
+		}
+		
+		for (int i = 0; i < infoBi.length; i++) {
+			infoBi[i][1] = getListaDeAlunos(i + 1).getNome();
+		}
+		
+		for (int i = 0; i < infoBi.length; i++) {
+			Aluno a = getListaDeAlunos(i + 1);
+			for (int j = 2; j <= 7; j++) {				
+				infoBi[i][j] = new Double(a.getNotasDaAvaliacao(bimestre, j - 1));
+			}
+		}		
+		
+		for (int i = 0; i < infoBi.length; i++) {
+			infoBi[i][10] = new Integer(getListaDeAlunos(i + 1).getFaltas(bimestre));
+		}
+		
+		return infoBi;
+	}
+	
 	public void display() {
 		p = new PrintStream(System.out);
-		for (Aluno aluno : listaDeAlunos) {
-			p.printf("%d %s", aluno.getNumero(), aluno.getNome());
+		for (Map.Entry<Integer, Aluno> me : listaDeAlunos.entrySet()) {
+			int numeroDoAluno = me.getValue().getNumero();
+			String nomeDoAluno = me.getValue().getNome();
+			p.printf("%d %s", numeroDoAluno, nomeDoAluno);
 		}
 	}
 }
