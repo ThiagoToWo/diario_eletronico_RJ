@@ -15,6 +15,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 import objects.Aluno;
 import objects.FileManager;
@@ -22,15 +24,20 @@ import objects.Turma;
 
 public class DiarioGui extends JFrame {	
 
-	private Turma turma;	
+	private Turma turma;
+	private Aluno aluno;
 	private String[] caput = {"Número", "Nome", "Intrumento 1", "Recuperação 1", "Intrumento 2", "Recuperação 2",
 			 "Intrumento 3", "Recuperação 3", "Somatória antes da rec.", "Somatório depois da rec.", "Faltas"};
 	private JTabbedPane tabBimestres;
-	private JPanel panelBimestre1;
-	private JPanel panelBimestre2;
-	private JPanel panelBimestre3;
-	private JPanel panelBimestre4;
-	private JPanel panelFinal;
+	private DefaultTableModel dm1 = new DefaultTableModel(caput, 1); 
+	private DefaultTableModel dm2 = new DefaultTableModel(caput, 1); 
+	private DefaultTableModel dm3 = new DefaultTableModel(caput, 1); 
+	private DefaultTableModel dm4 = new DefaultTableModel(caput, 1); 
+	private JTable panelBimestre1;
+	private JTable panelBimestre2;
+	private JTable panelBimestre3;
+	private JTable panelBimestre4;
+	private JTable panelFinal;
 	private FileManager fmn = new FileManager();
 	JTextField numero;
 	JTextField nome;
@@ -129,19 +136,19 @@ public class DiarioGui extends JFrame {
 		getContentPane().add(BorderLayout.NORTH, painelNorte);
 		
 		// cria os painéis dos bimestres
-		panelBimestre1 = new JPanel();
-		panelBimestre2 = new JPanel();
-		panelBimestre3 = new JPanel();
-		panelBimestre4 = new JPanel();
-		panelFinal = new JPanel();
+		panelBimestre1 = new JTable(dm1);
+		panelBimestre2 = new JTable(dm2);
+		panelBimestre3 = new JTable(dm3);
+		panelBimestre4 = new JTable(dm4);
+		panelFinal = new JTable();
 		
 		// cria as tabs e adiciona os painéis dos bimestres
 		tabBimestres = new JTabbedPane();
-		tabBimestres.addTab("Bimestre 1", panelBimestre1);
-		tabBimestres.addTab("Bimestre 2", panelBimestre2);
-		tabBimestres.addTab("Bimestre 3", panelBimestre3);
-		tabBimestres.addTab("Bimestre 4", panelBimestre4);
-		tabBimestres.addTab("Final", panelFinal);
+		tabBimestres.addTab("Bimestre 1", new JScrollPane(panelBimestre1));
+		tabBimestres.addTab("Bimestre 2", new JScrollPane(panelBimestre2));
+		tabBimestres.addTab("Bimestre 3", new JScrollPane(panelBimestre3));
+		tabBimestres.addTab("Bimestre 4", new JScrollPane(panelBimestre4));
+		tabBimestres.addTab("Final", new JScrollPane(panelFinal));
 		
 		// adiciona as tabs no frame
 		getContentPane().add(BorderLayout.CENTER, tabBimestres);
@@ -158,15 +165,16 @@ public class DiarioGui extends JFrame {
 			double[] not = getNotas();
 			short fal = getFaltas();
 			if (turma.getListaDeAlunos(num) == null) {
-				Aluno aluno = new Aluno(num, nome.getText());				
+				aluno = new Aluno(num, nome.getText());				
 				aluno.setNotas(tabBimestres.getSelectedIndex() + 1, not);
 				aluno.setFaltas(tabBimestres.getSelectedIndex() + 1, fal);
 				turma.addListaDeAlunos(aluno);
 			} else {
-				Aluno aluno = turma.getListaDeAlunos(num);
+				aluno = turma.getListaDeAlunos(num);
 				if (!nome.getText().isEmpty()) aluno.setNome(nome.getText());
 				aluno.setNotas(tabBimestres.getSelectedIndex() + 1, not);
 				aluno.setFaltas(tabBimestres.getSelectedIndex() + 1, fal);
+				//turma.addListaDeAlunos(aluno);
 			}			
 		} else {
 			JOptionPane.showMessageDialog(getParent(), "Crie ou carregue uma turma.",
@@ -175,10 +183,26 @@ public class DiarioGui extends JFrame {
 	}
 	
 	private void preencherTabela() {
-		JTable tabela = new JTable(turma.getInfoDosAlunosPorBimestre(1), caput);
-		panelBimestre1.removeAll();
-		JScrollPane rolagem = new JScrollPane(tabela);
-		panelBimestre1.add(rolagem);
+		switch (tabBimestres.getSelectedIndex()) {
+		case 0:				
+			dm1.insertRow(aluno.getNumero() - 1, aluno.getInfoGeralBimestre(1));
+			dm1.removeRow(aluno.getNumero());
+			break;
+		case 1:
+			dm2.insertRow(aluno.getNumero() - 1, aluno.getInfoGeralBimestre(2));
+			dm2.removeRow(aluno.getNumero());
+			break;
+		case 2:
+			dm3.insertRow(aluno.getNumero() - 1, aluno.getInfoGeralBimestre(3));
+			dm3.removeRow(aluno.getNumero());
+			break;
+		case 3:
+			dm4.insertRow(aluno.getNumero() - 1, aluno.getInfoGeralBimestre(4));
+			dm4.removeRow(aluno.getNumero());
+			break;
+		}
+		
+			
 	}	
 	
 	private int getNumero() {

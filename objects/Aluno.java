@@ -69,6 +69,8 @@ public class Aluno implements Serializable{
 	public void calcularNotaFinalBimestre() {
 		
 		for (int i = 0; i < notas.length; i++) {
+			notaFinalBimestre[i][0] = 0;
+			notaFinalBimestre[i][1] = 0;
 			for (int j = 0; j < notas[i].length; j++) {
 				if (j % 2 == 0) {
 					notaFinalBimestre[i][0] += notas[i][j];
@@ -96,6 +98,26 @@ public class Aluno implements Serializable{
 		return this.totalFaltas;
 	}
 	
+	public Object[] getInfoGeralBimestre(int bimestre) {
+		Object[] infoBi = new Object[11];
+		
+		infoBi[0] = getNumero();
+		infoBi[1] = getNome();
+
+		for (int i = 2; i <= 7; i++) {
+			infoBi[i] = new Double(getNotasDaAvaliacao(bimestre, i - 1));
+		}
+		
+		calcularNotaFinalBimestre();
+		
+		for (int i = 8; i <= 9; i++) {
+			infoBi[i] = notaFinalBimestre[bimestre -1][i - 8];
+		}
+
+		infoBi[10] = getFaltas(bimestre);
+
+		return infoBi;
+	}
 	
 	public void display(PrintStream output) { // display no console
 		p = new PrintStream(output);
